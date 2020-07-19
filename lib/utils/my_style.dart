@@ -4,6 +4,12 @@ class MyStyle {
   Color darkColor = Colors.blue.shade900;
   Color primaryColor = Colors.green.shade900;
 
+  Widget showProgress() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
   BoxDecoration myBoxDecoration(String namePic) {
     return BoxDecoration(
         image: DecorationImage(
@@ -15,9 +21,10 @@ class MyStyle {
         height: 16.0,
       );
 
-  Widget titlecenter(BuildContext context,String string) {
+  Widget titlecenter(BuildContext context, String string) {
     return Center(
-      child: Container(width: MediaQuery.of(context).size.width*0.5,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.5,
         child: Text(
           string,
           style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),

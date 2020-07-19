@@ -79,7 +79,7 @@ class _SignInState extends State<SignIn> {
 
   Future<Null> checkAuthen() async {
     String url =
-        'http://202.5.94.230/UngPHP3/getUserWhereUser.php?isAdd=true&User=$user';
+        'http://202.43.47.251/UngPHP3/getUserWhereUser.php?isAdd=true&User=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');
