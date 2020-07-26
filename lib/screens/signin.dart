@@ -4,6 +4,7 @@ import 'package:cabbitfood/model/user_model.dart';
 import 'package:cabbitfood/screens/main_rider.dart';
 import 'package:cabbitfood/screens/main_shop.dart';
 import 'package:cabbitfood/screens/main_user.dart';
+import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/utils/normal_dialog.dart';
 import 'package:dio/dio.dart';
@@ -79,7 +80,7 @@ class _SignInState extends State<SignIn> {
 
   Future<Null> checkAuthen() async {
     String url =
-        'http://202.43.47.251/UngPHP3/getUserWhereUser.php?isAdd=true&User=$user';
+        '${MyConstant().domain}/UngPHP3/getUserWhereUser.php?isAdd=true&User=$user';
     try {
       Response response = await Dio().get(url);
       print('res = $response');

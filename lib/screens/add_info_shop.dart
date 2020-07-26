@@ -1,9 +1,14 @@
 import 'dart:io';
+import 'dart:math';
+import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
+import 'package:cabbitfood/utils/normal_dialog.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddInfoShop extends StatefulWidget {
   AddInfoShop({Key key}) : super(key: key);
@@ -15,6 +20,7 @@ class AddInfoShop extends StatefulWidget {
 class _AddInfoShopState extends State<AddInfoShop> {
   double lat, lng;
   File file;
+  String nameShop, address, phone,urlImage;
 
   @override
   void initState() {
@@ -73,7 +79,21 @@ class _AddInfoShopState extends State<AddInfoShop> {
       width: MediaQuery.of(context).size.width,
       child: RaisedButton.icon(
         color: MyStyle().primaryColor,
-        onPressed: () {},
+        onPressed: () {
+          if (nameShop == null ||
+              nameShop.isEmpty ||
+              address == null ||
+              address.isEmpty ||
+              phone == null ||
+              phone.isEmpty) {
+            normalDialog(context, 'กรุณากรอกทุกช่อง');
+          }else if(file == null){
+            normalDialog(context, 'กรุณาเลือกรูปภาพ');
+          }else{
+            uploadImage();
+              
+          }
+        },
         icon: Icon(
           Icons.save,
           color: Colors.white,
@@ -85,6 +105,43 @@ class _AddInfoShopState extends State<AddInfoShop> {
       ),
     );
   }
+     
+   Future<Null>uploadImage()async{
+      Random random = Random();
+      int i = random.nextInt(1000000);
+      String nameImage = 'shop$i.jpg';
+
+      String url= '${MyConstant().domain}/UngPHP3/saveShop.php';
+      try {
+        Map<String,dynamic> map = Map();
+        map['file'] = await MultipartFile.fromFile(file.path, filename: nameImage);
+
+        FormData formData = FormData.fromMap(map);
+        await Dio().post(url,data: formData).then((value){
+          print('response ++>> $value');
+          urlImage = '/UngPHP3/Shop/$nameImage';
+          print('urlImage = $urlImage');
+          editUserShop();
+
+        });
+
+      } catch (e) {
+      }
+   }
+
+   Future<Null> editUserShop() async{
+     SharedPreferences preferences = await SharedPreferences.getInstance();
+     String id = preferences.getString('id');
+     String url ='${MyConstant().domain}/UngPHP3/editUserWhereId.php?isAdd=true&id=$id&NameShop=$nameShop&Address=$address&Phone=$phone&UrlPicture=$urlImage&Lat=$lat&Lng=$lng';
+     
+    await Dio().get(url).then((value) {
+      if (value.toString() == 'true') {
+        Navigator.pop(context);
+      } else {
+        normalDialog(context, 'กรุณาลองใหม่');
+      }
+    });
+   }
 
   Set<Marker> myMarker() {
     return <Marker>[
@@ -155,6 +212,7 @@ class _AddInfoShopState extends State<AddInfoShop> {
           Container(
             width: 250.0,
             child: TextField(
+              onChanged: (value) => nameShop = value.trim(),
               decoration: InputDecoration(
                 labelText: 'ชื่อร้านค้า',
                 prefixIcon: Icon(Icons.account_box),
@@ -170,6 +228,7 @@ class _AddInfoShopState extends State<AddInfoShop> {
           Container(
             width: 250.0,
             child: TextField(
+              onChanged: (value) => address = value.trim(),
               decoration: InputDecoration(
                 labelText: 'ที่อยู่ร้านค้า',
                 prefixIcon: Icon(Icons.home),
@@ -185,6 +244,7 @@ class _AddInfoShopState extends State<AddInfoShop> {
           Container(
             width: 250.0,
             child: TextField(
+              onChanged: (value) => phone = value.trim(),
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 labelText: 'เบอร์ติดต่อร้านค้า',

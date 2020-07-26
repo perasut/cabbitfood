@@ -1,3 +1,4 @@
+import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/utils/normal_dialog.dart';
 import 'package:dio/dio.dart';
@@ -73,7 +74,7 @@ class _SignUpState extends State<SignUp> {
 
   Future<Null> checkUser() async {
     String url =
-        'http://202.43.47.251/UngPHP3/getUserWhereUser.php?isAdd=true&User=$user';
+        '${MyConstant().domain}/UngPHP3/getUserWhereUser.php?isAdd=true&User=$user';
     try {
       Response response = await Dio().get(url);
       if (response.toString() == 'null') {
@@ -86,7 +87,8 @@ class _SignUpState extends State<SignUp> {
 
   Future<Null> registerThread() async {
     String url =
-        'http://202.43.47.251/UngPHP3/adduser.php?isAdd=true&Name=$name&User=$user&Password=$password&ChooseType=$chooseType';
+        '${MyConstant().domain}/UngPHP3/adduser.php?isAdd=true&Name=$name&User=$user&Password=$password&ChooseType=$chooseType';
+  
     try {
       Response response = await Dio().get(url);
       print('res = $response');
