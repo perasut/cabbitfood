@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 
 import 'package:cabbitfood/model/user_model.dart';
 import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
+import 'package:cabbitfood/utils/normal_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +25,7 @@ class _EditInfoShopState extends State<EditInfoShop> {
   String nameShop, address, phone, urlPicture;
   Location location = Location();
   double lat, lng;
+  File file;
 
   @override
   void initState() {
@@ -88,7 +93,7 @@ class _EditInfoShopState extends State<EditInfoShop> {
       width: MediaQuery.of(context).size.width,
       child: RaisedButton.icon(
           color: MyStyle().primaryColor,
-          onPressed: () {},
+          onPressed: () => confirmDialog(),
           icon: Icon(
             Icons.edit,
             color: Colors.white,
@@ -98,6 +103,60 @@ class _EditInfoShopState extends State<EditInfoShop> {
             style: TextStyle(color: Colors.white),
           )),
     );
+  }
+
+  Future<Null> confirmDialog() async {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text('คุณแน่ใจว่าจะปรับปรุงรายละเอียดร้าน'),
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              OutlineButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  editThred();
+                },
+                child: Text('แน่ใจ'),
+              ),
+              OutlineButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('ไม่แน่ใจ'),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<Null> editThred() async {
+    Random random = Random();
+    int i = random.nextInt(100000);
+    String namefile = 'editShop$i.jpg';
+    Map<String, dynamic> map = Map();
+    map['file'] = await MultipartFile.fromFile(file.path, filename: namefile);
+    FormData formData = FormData.fromMap(map);
+
+    String urlUpload = '${MyConstant().domain}/UngPHP3/saveShop.php';
+    await Dio().post(urlUpload, data: formData).then((value) async {
+      urlPicture = '/UngPHP3/Shop/$namefile';
+       String id = userModel.id;
+    print('id==>$id');
+    String url =
+        '${MyConstant().domain}/UngPHP3/editUserWhereId.php?isAdd=true&id=$id&NameShop=$nameShop&Address=$address&Phone=$phone&UrlPicture=$urlPicture&Lat=$lat&Lng=$lng';
+
+    Response response = await Dio().get(url);
+    if (response.toString() == 'true') {
+      Navigator.pop(context);
+    } else {
+      normalDialog(context, 'ยัง update ไม่ได้');
+    }
+    });
+
+   
   }
 
   Set<Marker> currentMarker() {
@@ -132,15 +191,36 @@ class _EditInfoShopState extends State<EditInfoShop> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            IconButton(icon: Icon(Icons.add_a_photo), onPressed: null),
+            IconButton(
+              icon: Icon(Icons.add_a_photo),
+              onPressed: () => chooseImage(ImageSource.camera),
+            ),
             Container(
                 width: 250.0,
                 height: 250.0,
-                child: Image.network('${MyConstant().domain}$urlPicture')),
-            IconButton(icon: Icon(Icons.add_photo_alternate), onPressed: null),
+                child: file == null
+                    ? Image.network('${MyConstant().domain}$urlPicture')
+                    : Image.file(file)),
+            IconButton(
+              icon: Icon(Icons.add_photo_alternate),
+              onPressed: () => chooseImage(ImageSource.gallery),
+            ),
           ],
         ),
       );
+
+  Future<Null> chooseImage(ImageSource source) async {
+    try {
+      var object = await ImagePicker.pickImage(
+        source: source,
+        maxWidth: 800.0,
+        maxHeight: 800.0,
+      );
+      setState(() {
+        file = object;
+      });
+    } catch (e) {}
+  }
 
   Widget nameShopForm() => Row(
         mainAxisAlignment: MainAxisAlignment.center,
