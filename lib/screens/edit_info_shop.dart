@@ -14,8 +14,6 @@ import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditInfoShop extends StatefulWidget {
-  EditInfoShop({Key key}) : super(key: key);
-
   @override
   _EditInfoShopState createState() => _EditInfoShopState();
 }
@@ -135,7 +133,8 @@ class _EditInfoShopState extends State<EditInfoShop> {
   Future<Null> editThred() async {
     Random random = Random();
     int i = random.nextInt(100000);
-    String namefile = 'editShop$i.jpg';
+    String namefile = 'editShop$i.jpg';    
+
     Map<String, dynamic> map = Map();
     map['file'] = await MultipartFile.fromFile(file.path, filename: namefile);
     FormData formData = FormData.fromMap(map);
@@ -143,20 +142,18 @@ class _EditInfoShopState extends State<EditInfoShop> {
     String urlUpload = '${MyConstant().domain}/UngPHP3/saveShop.php';
     await Dio().post(urlUpload, data: formData).then((value) async {
       urlPicture = '/UngPHP3/Shop/$namefile';
-       String id = userModel.id;
-    print('id==>$id');
-    String url =
-        '${MyConstant().domain}/UngPHP3/editUserWhereId.php?isAdd=true&id=$id&NameShop=$nameShop&Address=$address&Phone=$phone&UrlPicture=$urlPicture&Lat=$lat&Lng=$lng';
-
-    Response response = await Dio().get(url);
-    if (response.toString() == 'true') {
-      Navigator.pop(context);
-    } else {
-      normalDialog(context, 'ยัง update ไม่ได้');
-    }
+      String id = userModel.id;
+      print('id==>$id');
+      String url =
+          '${MyConstant().domain}/UngPHP3/editUserWhereId.php?isAdd=true&id=$id&NameShop=$nameShop&Address=$address&Phone=$phone&UrlPicture=$urlPicture&Lat=$lat&Lng=$lng';
+      // 'http://202.43.47.251/UngPHP3/editUserWhereId.php?isAdd=true&id=$id&NameShop=$nameShop&Address=$address&Phone=$phone&UrlPicture=$urlPicture&Lat=$lat&Lng=$lng';
+      Response response = await Dio().get(url);
+      if (response.toString() == 'true') {
+        Navigator.pop(context);
+      } else {
+        normalDialog(context, 'ยัง update ไม่ได้');
+      }
     });
-
-   
   }
 
   Set<Marker> currentMarker() {
@@ -210,14 +207,25 @@ class _EditInfoShopState extends State<EditInfoShop> {
       );
 
   Future<Null> chooseImage(ImageSource source) async {
+    // try {
+    //   var object = await ImagePicker.pickImage(
+    //     source: source,
+    //     maxWidth: 800.0,
+    //     maxHeight: 800.0,
+    //   );
+    //   setState(() {
+    //     file = object;
+    //   });
+    // } catch (e) {}
     try {
-      var object = await ImagePicker.pickImage(
+      var object = await ImagePicker().getImage(
         source: source,
         maxWidth: 800.0,
         maxHeight: 800.0,
       );
+
       setState(() {
-        file = object;
+        file = File(object.path);
       });
     } catch (e) {}
   }

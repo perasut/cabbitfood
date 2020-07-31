@@ -20,7 +20,7 @@ class AddInfoShop extends StatefulWidget {
 class _AddInfoShopState extends State<AddInfoShop> {
   double lat, lng;
   File file;
-  String nameShop, address, phone,urlImage;
+  String nameShop, address, phone, urlImage;
 
   @override
   void initState() {
@@ -87,11 +87,10 @@ class _AddInfoShopState extends State<AddInfoShop> {
               phone == null ||
               phone.isEmpty) {
             normalDialog(context, 'กรุณากรอกทุกช่อง');
-          }else if(file == null){
+          } else if (file == null) {
             normalDialog(context, 'กรุณาเลือกรูปภาพ');
-          }else{
+          } else {
             uploadImage();
-              
           }
         },
         icon: Icon(
@@ -105,35 +104,34 @@ class _AddInfoShopState extends State<AddInfoShop> {
       ),
     );
   }
-     
-   Future<Null>uploadImage()async{
-      Random random = Random();
-      int i = random.nextInt(1000000);
-      String nameImage = 'shop$i.jpg';
 
-      String url= '${MyConstant().domain}/UngPHP3/saveShop.php';
-      try {
-        Map<String,dynamic> map = Map();
-        map['file'] = await MultipartFile.fromFile(file.path, filename: nameImage);
+  Future<Null> uploadImage() async {
+    Random random = Random();
+    int i = random.nextInt(1000000);
+    String nameImage = 'shop$i.jpg';
 
-        FormData formData = FormData.fromMap(map);
-        await Dio().post(url,data: formData).then((value){
-          print('response ++>> $value');
-          urlImage = '/UngPHP3/Shop/$nameImage';
-          print('urlImage = $urlImage');
-          editUserShop();
+    String url = '${MyConstant().domain}/UngPHP3/saveShop.php';
+    try {
+      Map<String, dynamic> map = Map();
+      map['file'] =
+          await MultipartFile.fromFile(file.path, filename: nameImage);
 
-        });
+      FormData formData = FormData.fromMap(map);
+      await Dio().post(url, data: formData).then((value) {
+        print('response ++>> $value');
+        urlImage = '/UngPHP3/Shop/$nameImage';
+        print('urlImage = $urlImage');
+        editUserShop();
+      });
+    } catch (e) {}
+  }
 
-      } catch (e) {
-      }
-   }
+  Future<Null> editUserShop() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String id = preferences.getString('id');
+    String url =
+        '${MyConstant().domain}/UngPHP3/editUserWhereId.php?isAdd=true&id=$id&NameShop=$nameShop&Address=$address&Phone=$phone&UrlPicture=$urlImage&Lat=$lat&Lng=$lng';
 
-   Future<Null> editUserShop() async{
-     SharedPreferences preferences = await SharedPreferences.getInstance();
-     String id = preferences.getString('id');
-     String url ='${MyConstant().domain}/UngPHP3/editUserWhereId.php?isAdd=true&id=$id&NameShop=$nameShop&Address=$address&Phone=$phone&UrlPicture=$urlImage&Lat=$lat&Lng=$lng';
-     
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         Navigator.pop(context);
@@ -141,7 +139,7 @@ class _AddInfoShopState extends State<AddInfoShop> {
         normalDialog(context, 'กรุณาลองใหม่');
       }
     });
-   }
+  }
 
   Set<Marker> myMarker() {
     return <Marker>[
@@ -194,14 +192,25 @@ class _AddInfoShopState extends State<AddInfoShop> {
       );
 
   Future<Null> chooseimage(ImageSource imageSource) async {
+    // try {
+    //   var object = await ImagePicker.pickImage(
+    //     source: imageSource,
+    //     maxHeight: 800.0,
+    //     maxWidth: 800.0,
+    //   );
+    //   setState(() {
+    //     file = object;
+    //   });
+    // } catch (e) {}
     try {
-      var object = await ImagePicker.pickImage(
+      var object = await ImagePicker().getImage(
         source: imageSource,
         maxHeight: 800.0,
         maxWidth: 800.0,
       );
+
       setState(() {
-        file = object;
+        file = File(object.path);
       });
     } catch (e) {}
   }
