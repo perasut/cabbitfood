@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/utils/normal_dialog.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddFoodMenu extends StatefulWidget {
   AddFoodMenu({Key key}) : super(key: key);
@@ -55,8 +59,9 @@ class _AddFoodMenuState extends State<AddFoodMenu> {
                 detail == null ||
                 detail.isEmpty) {
               normalDialog(context, 'กรุณากรอกข้อมูลทุกช่อง');
-            } else {}
-            {}
+            } else {
+              uploadFoodAnfInsertData();
+            }
           },
           icon: Icon(
             Icons.save,
@@ -67,6 +72,32 @@ class _AddFoodMenuState extends State<AddFoodMenu> {
             style: TextStyle(color: Colors.white),
           )),
     );
+  }
+
+  Future<Null> uploadFoodAnfInsertData() async {
+    String urlUpload = '${MyConstant().domain}/UngPHP3/saveFood.php';
+
+    Random random = Random();
+    int i = random.nextInt(1000000);
+    String nameFile = 'food$i.jpg';
+
+    try {
+      Map<String, dynamic> map = Map();
+      map['file'] = await MultipartFile.fromFile(file.path, filename: nameFile);
+      FormData formData = FormData.fromMap(map);
+
+      await Dio().post(urlUpload, data: formData).then((value) async {
+        String urlPathImage = '/UngPHP3/Food/$nameFile';
+        print('urlPathImage = ${MyConstant().domain}$urlPathImage');
+
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        String idShop = preferences.getString('id');
+        String urlInsertData =
+            '${MyConstant().domain}/UngPHP3/addFood.php?isAdd=true&idShop=$idShop&NameFood=$nameFood&PathImage=$urlPathImage&Price=$priceFood&Detail=$detail';
+
+        await Dio().get(urlInsertData).then((value) => Navigator.pop(context));
+      });
+    } catch (e) {}
   }
 
   Widget nameForm() => Container(
@@ -82,7 +113,8 @@ class _AddFoodMenuState extends State<AddFoodMenu> {
 
   Widget priceForm() => Container(
       width: 250.0,
-      child: TextField(keyboardType: TextInputType.number,
+      child: TextField(
+        keyboardType: TextInputType.number,
         onChanged: (value) => priceFood = value.trim(),
         decoration: InputDecoration(
           prefixIcon: Icon(Icons.attach_money),

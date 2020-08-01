@@ -9,6 +9,17 @@ class MyStyle {
       child: CircularProgressIndicator(),
     );
   }
+    TextStyle mainTitle = TextStyle(
+    fontSize: 18.0,
+    fontWeight: FontWeight.bold,
+    color: Colors.purple,
+  );
+
+  TextStyle mainH2Title = TextStyle(
+    fontSize: 16.0,
+    fontWeight: FontWeight.bold,
+    color: Colors.green.shade700,
+  );
 
   BoxDecoration myBoxDecoration(String namePic) {
     return BoxDecoration(

@@ -30,11 +30,11 @@ class _EditInfoShopState extends State<EditInfoShop> {
     super.initState();
     readCurrentInform();
 
-    location.onLocationChanged.listen((event) {
+      location.onLocationChanged.listen((event) {
       setState(() {
         lat = event.latitude;
         lng = event.longitude;
-        // print('lat=$lat,lng=$lng');
+        // print('lat = $lat, lng = $lng');
       });
     });
   }
@@ -59,6 +59,7 @@ class _EditInfoShopState extends State<EditInfoShop> {
         nameShop = userModel.nameShop;
         address = userModel.address;
         phone = userModel.phone;
+        // phone = userModel.password;
         urlPicture = userModel.urlPicture;
       });
     }
@@ -122,7 +123,7 @@ class _EditInfoShopState extends State<EditInfoShop> {
               OutlineButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text('ไม่แน่ใจ'),
-              )
+              ),
             ],
           )
         ],
@@ -184,7 +185,7 @@ class _EditInfoShopState extends State<EditInfoShop> {
   }
 
   Widget showImage() => Container(
-        margin: EdgeInsets.only(top: 16.0),
+        margin: EdgeInsetsDirectional.only (top: 16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
