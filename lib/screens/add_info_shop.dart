@@ -117,6 +117,7 @@ class _AddInfoShopState extends State<AddInfoShop> {
           await MultipartFile.fromFile(file.path, filename: nameImage);
 
       FormData formData = FormData.fromMap(map);
+
       await Dio().post(url, data: formData).then((value) {
         print('response ++>> $value');
         urlImage = '/UngPHP3/Shop/$nameImage';

@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:cabbitfood/model/user_model.dart';
+import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/utils/signout_process.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,11 +17,35 @@ class MainUser extends StatefulWidget {
 
 class _MainUserState extends State<MainUser> {
   String nameUser;
+  List<UserModel> userModels = List();
 
   @override
   void initState() {
     super.initState();
     findUser();
+    readShop();
+  }
+
+  Future<Null> readShop() async {
+    String url =
+        '${MyConstant().domain}//UngPHP3/getUserWhereChooseType.php?isAdd=true&ChooseType=Shop';
+    await Dio().get(url).then((value) {
+      // print('value = $value');
+      var result = json.decode(value.data);
+      for (var map in result) {
+        UserModel model = UserModel.fromJson(map);
+        // print('nameShop = ${model.nameShop}');
+        String nameShop = model.nameShop;
+       if (nameShop.isNotEmpty) {
+         print('nameShop = ${model.nameShop}');
+          setState(() {
+          userModels.add(model);
+        });
+       }
+
+        
+      }
+    });
   }
 
   Future<Null> findUser() async {
