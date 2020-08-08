@@ -1,4 +1,5 @@
 import 'package:cabbitfood/model/user_model.dart';
+import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/widget/about_shop.dart';
 import 'package:cabbitfood/widget/show_menu_food.dart';
 import 'package:flutter/material.dart';
@@ -13,13 +14,17 @@ class ShowShopFoodMenu extends StatefulWidget {
 
 class _ShowShopFoodMenuState extends State<ShowShopFoodMenu> {
   UserModel userModel;
-  List<Widget> listWidgets = [AboutShop(), ShowMenuFoodNav()];
+  List<Widget> listWidgets = List();
   int indexPage = 0;
 
   @override
   void initState() {
     super.initState();
     userModel = widget.userModel;
+    listWidgets.add(AboutShop(
+      userModel: userModel,
+    ));
+    listWidgets.add(ShowMenuFoodNav());
   }
 
   BottomNavigationBarItem aboutShopNav() {
@@ -42,7 +47,7 @@ class _ShowShopFoodMenuState extends State<ShowShopFoodMenu> {
       appBar: AppBar(
         title: Text(userModel.nameShop),
       ),
-      body: listWidgets[indexPage],
+      body: listWidgets.length == 0 ?MyStyle().showProgress():listWidgets[indexPage],
       bottomNavigationBar: showBottomNavigationBar(),
     );
   }
