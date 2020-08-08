@@ -1,10 +1,7 @@
-import 'dart:convert';
-
-import 'package:cabbitfood/model/user_model.dart';
-import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/utils/signout_process.dart';
-import 'package:dio/dio.dart';
+import 'package:cabbitfood/widget/show_list_shop_all.dart';
+import 'package:cabbitfood/widget/show_status_food_order.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,35 +14,13 @@ class MainUser extends StatefulWidget {
 
 class _MainUserState extends State<MainUser> {
   String nameUser;
-  List<UserModel> userModels = List();
+  Widget currentWidget;
 
   @override
   void initState() {
     super.initState();
+    currentWidget = ShowListShopAll();
     findUser();
-    readShop();
-  }
-
-  Future<Null> readShop() async {
-    String url =
-        '${MyConstant().domain}//UngPHP3/getUserWhereChooseType.php?isAdd=true&ChooseType=Shop';
-    await Dio().get(url).then((value) {
-      // print('value = $value');
-      var result = json.decode(value.data);
-      for (var map in result) {
-        UserModel model = UserModel.fromJson(map);
-        // print('nameShop = ${model.nameShop}');
-        String nameShop = model.nameShop;
-       if (nameShop.isNotEmpty) {
-         print('nameShop = ${model.nameShop}');
-          setState(() {
-          userModels.add(model);
-        });
-       }
-
-        
-      }
-    });
   }
 
   Future<Null> findUser() async {
@@ -67,27 +42,91 @@ class _MainUserState extends State<MainUser> {
         ],
       ),
       drawer: showDrawer(),
+      body: currentWidget,
     );
   }
-}
 
-Drawer showDrawer() => Drawer(
-      child: ListView(
-        children: <Widget>[
-          showHeader(),
-        ],
+  Drawer showDrawer() => Drawer(
+        child: Stack(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                showHeader(),
+                menuListShop(),
+                menuStatusFoodOrder(),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                menuSignOut(),
+              ],
+            ),
+          ],
+        ),
+      );
+
+  ListTile menuListShop() {
+    return ListTile(
+      onTap: () {
+        Navigator.pop(context);
+        setState(() {
+          currentWidget = ShowListShopAll();
+        });
+      },
+      leading: Icon(Icons.home),
+      title: Text('แสดงร้านค้า'),
+      subtitle: Text('แสดงร้านค้าที่สั่งอาหารได้'),
+    );
+  }
+
+  ListTile menuStatusFoodOrder() {
+    return ListTile(
+      onTap: () {
+        Navigator.pop(context);
+        setState(() {
+          currentWidget = ShowStatusFoodOrder();
+        });
+      },
+      leading: Icon(Icons.restaurant_menu),
+      title: Text('แสดงรายการอาหารที่สั่ง'),
+      subtitle: Text('แสดงรายการอาหารที่สั่ง หรือดูสถานะของอาหาร'),
+    );
+  }
+
+  Widget menuSignOut() {
+    return Container(
+      decoration: BoxDecoration(color: Colors.orange.shade700),
+      child: ListTile(
+        onTap: () => signOutProcess(context),
+        leading: Icon(
+          Icons.exit_to_app,
+          color: Colors.white,
+        ),
+        title: Text(
+          'SignOut',
+          style: TextStyle(color: Colors.white),
+        ),
+        subtitle: Text(
+          'การออกจากaccount',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
-UserAccountsDrawerHeader showHeader() {
-  return UserAccountsDrawerHeader(
-      decoration: MyStyle().myBoxDecoration('user.jpg'),
-      currentAccountPicture: MyStyle().showLogo(),
-      accountName: Text(
-        'sdo',
-        style: TextStyle(color: MyStyle().darkColor),
-      ),
-      accountEmail: Text(
-        'sudo@gmail.com',
-        style: TextStyle(color: MyStyle().primaryColor),
-      ));
+  }
+
+  UserAccountsDrawerHeader showHeader() {
+    return UserAccountsDrawerHeader(
+        decoration: MyStyle().myBoxDecoration('user.jpg'),
+        currentAccountPicture: MyStyle().showLogo(),
+        accountName: Text(
+          nameUser == null ? 'Name Login' : nameUser,
+          style: TextStyle(color: MyStyle().darkColor),
+        ),
+        accountEmail: Text(
+          'sudo@gmail.com',
+          style: TextStyle(color: MyStyle().primaryColor),
+        ));
+  }
 }

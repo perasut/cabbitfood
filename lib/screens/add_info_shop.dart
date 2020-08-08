@@ -109,6 +109,7 @@ class _AddInfoShopState extends State<AddInfoShop> {
     Random random = Random();
     int i = random.nextInt(1000000);
     String nameImage = 'shop$i.jpg';
+    print('nameImage = $nameImage, pathImage = ${file.path}');
 
     String url = '${MyConstant().domain}/UngPHP3/saveShop.php';
     try {
@@ -166,31 +167,33 @@ class _AddInfoShopState extends State<AddInfoShop> {
     );
   }
 
-  Row groupImage() => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.add_a_photo,
-              size: 36.0,
-            ),
-            onPressed: () => chooseimage(ImageSource.camera),
+  Row groupImage() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        IconButton(
+          icon: Icon(
+            Icons.add_a_photo,
+            size: 36.0,
           ),
-          Container(
-            width: 250.0,
-            child: file == null
-                ? Image.asset('images/myimage.png')
-                : Image.file(file),
+          onPressed: () => chooseimage(ImageSource.camera),
+        ),
+        Container(
+          width: 250.0,
+          child: file == null
+              ? Image.asset('images/myimage.png')
+              : Image.file(file),
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.add_photo_alternate,
+            size: 36.0,
           ),
-          IconButton(
-            icon: Icon(
-              Icons.add_photo_alternate,
-              size: 36.0,
-            ),
-            onPressed: () => chooseimage(ImageSource.gallery),
-          ),
-        ],
-      );
+          onPressed: () => chooseimage(ImageSource.gallery),
+        ),
+      ],
+    );
+  }
 
   Future<Null> chooseimage(ImageSource imageSource) async {
     // try {

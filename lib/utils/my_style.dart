@@ -62,6 +62,15 @@ class MyStyle {
         ),
       );
 
+        Text showText3(String title) => Text(
+        title,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.blue.shade900,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+
   Container showLogo() {
     return Container(
       width: 120.0,
