@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:cabbitfood/model/user_model.dart';
 import 'package:cabbitfood/utils/my_constant.dart';
+import 'package:cabbitfood/utils/my_style.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 
@@ -19,17 +21,18 @@ class _AboutShopState extends State<AboutShop> {
   double lat1, lat2, lng1, lng2, distance;
   String distanceString;
   int transport;
-  Location location = Location();
+  CameraPosition position;
+  // Location location = Location();
 
   @override
   void initState() {
     super.initState();
     userModel = widget.userModel;
 
-    findLatLng();
+    findLatLng1();
   }
 
-  Future<Null> findLatLng() async {
+  Future<Null> findLatLng1() async {
     LocationData locationData = await findLocationData();
     setState(() {
       lat1 = locationData.latitude;
@@ -84,39 +87,134 @@ class _AboutShopState extends State<AboutShop> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: EdgeInsets.all(16.0),
-              width: 180.0,
-              height: 180.0,
-              child: Image.network(
-                '${MyConstant().domain}${userModel.urlPicture}',
-                fit: BoxFit.cover,
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.all(16.0),
+                width: 180.0,
+                height: 180.0,
+                child: Image.network(
+                  '${MyConstant().domain}${userModel.urlPicture}',
+                  fit: BoxFit.cover,
+                ),
               ),
+            ],
+          ),
+          ListTile(
+            leading: Icon(Icons.home),
+            title: Text(userModel.address),
+          ),
+          ListTile(
+            leading: Icon(Icons.phone),
+            title: Text(userModel.phone),
+          ),
+          ListTile(
+            leading: Icon(Icons.directions_bike),
+            title: Text(distance == null ? '' : '$distanceString km.'),
+          ),
+          ListTile(
+            leading: Icon(Icons.transfer_within_a_station),
+            title: Text(transport == null ? '' : '$transport bath'),
+          ),
+          showMap(),
+        ],
+      ),
+    );
+  }
+
+  // Container showMap() {
+  //   if (lat1 != null) {
+  //     LatLng latLng1 = LatLng(lat1, lng2);
+  //     position = CameraPosition(
+  //       target: latLng1,
+  //       zoom: 16.0,
+  //     );
+  //   }
+
+    // Marker userMarker() {
+    //   return Marker(
+    //       markerId: MarkerId('userMarker'),
+    //       position: LatLng(lat1, lng1),
+    //       icon: BitmapDescriptor.defaultMarkerWithHue(60.0),
+    //       infoWindow: InfoWindow(title: 'คุณอยู่ที่นี่'));
+    // }
+
+    // Marker shopMarker() {
+    //   return Marker(
+    //       markerId: MarkerId('shopMarker'),
+    //       position: LatLng(lat2, lng2),
+    //       icon: BitmapDescriptor.defaultMarkerWithHue(150.0),
+    //       infoWindow: InfoWindow(title: userModel.nameShop),
+    //       );
+    // }
+
+    // Set<Marker> mySet() {
+    //   return <Marker>[userMarker(), shopMarker()].toSet();
+    // }
+      Container showMap() {
+    if (lat1 != null) {
+      LatLng latLng1 = LatLng(lat1, lng2);
+      position = CameraPosition(
+        target: latLng1,
+        zoom: 16.0,
+      );
+    }
+
+        Marker userMarker() {
+      return Marker(
+        markerId: MarkerId('userMarker'),
+        position: LatLng(lat1, lng1),
+        icon: BitmapDescriptor.defaultMarkerWithHue(60.0),
+        infoWindow: InfoWindow(title: 'คุณอยู่ที่นี่'),
+      );
+    }
+
+    Marker shopMarker() {
+      return Marker(
+        markerId: MarkerId('shopMarker'),
+        position: LatLng(lat2, lng2),
+        icon: BitmapDescriptor.defaultMarkerWithHue(150.0),
+        infoWindow: InfoWindow(title: userModel.nameShop),
+      );
+    }
+
+    Set<Marker> mySet() {
+      return <Marker>[userMarker(), shopMarker()].toSet();
+    }
+
+    // return Container(
+    //   // color: Colors.grey,
+    //   margin: EdgeInsets.only(
+    //     left: 16,
+    //     right: 16,
+    //     top: 16,
+    //     bottom: 32,
+    //   ),
+    //   height: 250.0,
+    //   child: lat1 == null
+    //       ? MyStyle().showProgress()
+    //       : GoogleMap(
+    //           initialCameraPosition: position,
+    //           mapType: MapType.normal,
+    //           onMapCreated: (controller) {},markers: mySet(),
+    //         ),
+    // );
+        return Container(
+      margin: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 32),
+      // color: Colors.grey,
+      height: 250,
+      child: lat1 == null
+          ? MyStyle().showProgress()
+          : GoogleMap(
+              initialCameraPosition: position,
+              mapType: MapType.normal,
+              onMapCreated: (controller) {},
+              markers: mySet(),
             ),
-          ],
-        ),
-        ListTile(
-          leading: Icon(Icons.home),
-          title: Text(userModel.address),
-        ),
-        ListTile(
-          leading: Icon(Icons.phone),
-          title: Text(userModel.phone),
-        ),
-        ListTile(
-          leading: Icon(Icons.directions_bike),
-          title: Text(distance == null ? '' : '$distanceString km.'),
-        ),
-        ListTile(
-          leading: Icon(Icons.transfer_within_a_station),
-          title: Text(transport == null ? '' : '$transport bath'),
-        ),
-      ],
     );
   }
 }

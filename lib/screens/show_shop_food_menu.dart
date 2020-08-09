@@ -24,7 +24,9 @@ class _ShowShopFoodMenuState extends State<ShowShopFoodMenu> {
     listWidgets.add(AboutShop(
       userModel: userModel,
     ));
-    listWidgets.add(ShowMenuFoodNav());
+    listWidgets.add(ShowMenuFoodNav(
+      userModel: userModel ,
+    ));
   }
 
   BottomNavigationBarItem aboutShopNav() {
@@ -47,7 +49,9 @@ class _ShowShopFoodMenuState extends State<ShowShopFoodMenu> {
       appBar: AppBar(
         title: Text(userModel.nameShop),
       ),
-      body: listWidgets.length == 0 ?MyStyle().showProgress():listWidgets[indexPage],
+      body: listWidgets.length == 0
+          ? MyStyle().showProgress()
+          : listWidgets[indexPage],
       bottomNavigationBar: showBottomNavigationBar(),
     );
   }
