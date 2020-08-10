@@ -1,3 +1,4 @@
+import 'package:cabbitfood/screens/show_cart.dart';
 import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/utils/signout_process.dart';
 import 'package:cabbitfood/widget/show_list_shop_all.dart';
@@ -36,6 +37,7 @@ class _MainUserState extends State<MainUser> {
       appBar: AppBar(
         title: Text(nameUser == null ? 'Main User' : '$nameUser login'),
         actions: <Widget>[
+          MyStyle().iconShowCart(context),
           IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () => signOutProcess(context))
@@ -54,6 +56,7 @@ class _MainUserState extends State<MainUser> {
               children: <Widget>[
                 showHeader(),
                 menuListShop(),
+                menuCart(),
                 menuStatusFoodOrder(),
               ],
             ),
@@ -128,5 +131,20 @@ class _MainUserState extends State<MainUser> {
           'sudo@gmail.com',
           style: TextStyle(color: MyStyle().primaryColor),
         ));
+  }
+
+  Widget menuCart() {
+    return ListTile(
+      leading: Icon(Icons.add_shopping_cart),
+      title: Text('ตะกร้าของฉัน'),
+      subtitle: Text('รายการอาหาร ที่อยู่ใน ตะกร้า ยังไม่ได้ order'),
+      onTap: () {
+        Navigator.pop(context);
+        MaterialPageRoute route = MaterialPageRoute(
+          builder: (context) => ShowCart(),
+        );
+        Navigator.push(context, route);
+      },
+    );
   }
 }

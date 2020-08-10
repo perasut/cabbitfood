@@ -1,15 +1,29 @@
+import 'package:cabbitfood/screens/show_cart.dart';
 import 'package:flutter/material.dart';
 
 class MyStyle {
   Color darkColor = Colors.blue.shade900;
   Color primaryColor = Colors.green.shade900;
 
+  Widget iconShowCart(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.add_shopping_cart),
+      onPressed: () {
+        MaterialPageRoute route = MaterialPageRoute(
+          builder: (context) => ShowCart(),
+        );
+        Navigator.push(context, route);
+      },
+    );
+  }
+
   Widget showProgress() {
     return Center(
       child: CircularProgressIndicator(),
     );
   }
-    TextStyle mainTitle = TextStyle(
+
+  TextStyle mainTitle = TextStyle(
     fontSize: 18.0,
     fontWeight: FontWeight.bold,
     color: Colors.purple,
@@ -62,7 +76,7 @@ class MyStyle {
         ),
       );
 
-        Text showText3(String title) => Text(
+  Text showText3(String title) => Text(
         title,
         style: TextStyle(
           fontSize: 16.0,

@@ -6,11 +6,13 @@ import 'package:cabbitfood/model/user_model.dart';
 import 'package:cabbitfood/utils/my_api.dart';
 import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
+import 'package:cabbitfood/utils/normal_dialog.dart';
 import 'package:cabbitfood/utils/sqlite_helper.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:toast/toast.dart';
 
 class ShowMenuFoodNav extends StatefulWidget {
   final UserModel userModel;
@@ -277,8 +279,37 @@ class _ShowMenuFoodNavState extends State<ShowMenuFoodNav> {
     print('map=${map.toString()}');
 
     CartModel cartModel = CartModel.fromJson(map);
-    await SQLiteHelper().insertDataToSQLite(cartModel).then((value) {
-      print('insert success');
-    });
+
+    var object = await SQLiteHelper().readAllDataFromSQLite();
+    print('object lenght= ${object.length}');
+
+    if (object.length == 0) {
+      await SQLiteHelper().insertDataToSQLite(cartModel).then((value) {
+        print('insert success');
+        showToast('insert success');
+      });
+    } else {
+      String idShopSQLite = object[0].idShop;
+      print('idShopSQLite = $idShopSQLite');
+      if (idShop == idShopSQLite) {
+        await SQLiteHelper().insertDataToSQLite(cartModel).then((value) {
+          print('insert success');
+          showToast('insert success');
+        });
+      } else {
+        normalDialog(
+          context,
+          'ตะกร้ามีรายการอาหารของ ร้าน${object[0].nameShop}อยู่ กรุณาซื้อจากร้านนี้ให้จบก่อน',
+        );
+      }
+    }
+  }
+
+  void showToast(String string) {
+    Toast.show(
+      string,
+      context,
+      duration: Toast.LENGTH_LONG,
+    );
   }
 }
