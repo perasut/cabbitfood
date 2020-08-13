@@ -46,14 +46,16 @@ class _ShowCartState extends State<ShowCart> {
   Widget buildContent() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          buildNameShop(),
-          buildHeadTitle(),
-          buildListFood(),
-          Divider(),
-          buildTotal(),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            buildNameShop(),
+            buildHeadTitle(),
+            buildListFood(),
+            Divider(),
+            buildTotal(),
+          ],
+        ),
       ),
     );
   }
@@ -117,13 +119,17 @@ class _ShowCartState extends State<ShowCart> {
             child: MyStyle().showText2('ราคา'),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: MyStyle().showText2('จำนวน'),
           ),
           Expanded(
             flex: 1,
             child: MyStyle().showText2('รวม'),
           ),
+          Expanded(
+            flex: 1,
+            child: MyStyle().mySizeBox(),
+          )
         ],
       ),
     );
@@ -144,13 +150,26 @@ class _ShowCartState extends State<ShowCart> {
                 child: Text(cartModels[index].price),
               ),
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: Text(cartModels[index].amount),
               ),
               Expanded(
                 flex: 1,
                 child: Text(cartModels[index].sum),
               ),
+              Expanded(
+                  flex: 1,
+                  child: IconButton(
+                    icon: Icon(Icons.delete_forever),
+                    onPressed: () async {
+                      int id = cartModels[index].id;
+                      print('u click delete id = $id');
+                      await SQLiteHelper().deleteDataWhereId(id).then((value) {
+                        print('Sucess delete id =$id');
+                        readSQLite();
+                      });
+                    },
+                  ))
             ],
           ));
 }
