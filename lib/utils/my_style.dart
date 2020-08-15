@@ -81,19 +81,36 @@ class MyStyle {
         style: TextStyle(
           fontSize: 16.0,
           color: Colors.blue.shade900,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
         ),
       );
 
-        Text showText3red(String title) => Text(
+  Text showText3red(String title) => Text(
         title,
         style: TextStyle(
           fontSize: 16.0,
           color: Colors.red.shade900,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
         ),
       );
 
+  Text showText3Purple(String title) => Text(
+        title,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.purple.shade700,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+
+        Text showText3White(String title) => Text(
+        title,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.white,
+          fontWeight: FontWeight.w400,
+        ),
+      );
   Container showLogo() {
     return Container(
       width: 120.0,
