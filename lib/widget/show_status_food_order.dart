@@ -6,6 +6,7 @@ import 'package:cabbitfood/utils/my_style.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:steps_indicator/steps_indicator.dart';
 
 class ShowStatusFoodOrder extends StatefulWidget {
   @override
@@ -21,6 +22,7 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
   List<List<String>> listAmounts = List();
   List<List<String>> listSums = List();
   List<int> totalInts = List();
+  List<int> statusInts = List();
 
   @override
   void initState() {
@@ -49,8 +51,29 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
             buildListViewMenuFood(index),
             showTotal(index),
             MyStyle().mySizeBox(),
+            buildStepIndicator(statusInts[index]),
+            MyStyle().mySizeBox(),
           ],
         ),
+      );
+
+  Widget buildStepIndicator(int index) => Column(
+        children: [
+          StepsIndicator(
+            lineLength: 80,
+            selectedStep: index,
+            nbSteps: 4,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text('Order'),
+              Text('Cooking'),
+              Text('Delivery'),
+              Text('Finish'),
+            ],
+          )
+        ],
       );
 
   Widget showTotal(int index) => Row(
@@ -79,7 +102,7 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
   ListView buildListViewMenuFood(int index) => ListView.builder(
         shrinkWrap: true,
         physics: ScrollPhysics(),
-        itemCount: listMenuFoods.length,
+        itemCount: listMenuFoods[index].length,
         itemBuilder: (context, index2) => Row(
           children: [
             Expanded(
@@ -206,6 +229,22 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
           List<String> amounts = changeArrey(model.amount);
           List<String> sums = changeArrey(model.sum);
           // print('menuFoods ==>> $menuFoods');
+          int status = 0;
+          switch (model.status) {
+            case 'UserOrder':
+              status = 0;
+              break;
+            case 'ShopCooking':
+              status = 1;
+              break;
+            case 'RiderHandle':
+              status = 2;
+              break;
+            case 'Finish':
+              status = 3;
+              break;
+            default:
+          }
 
           int total = 0;
           for (var string in sums) {
@@ -220,6 +259,7 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
             listAmounts.add(amounts);
             listSums.add(sums);
             totalInts.add(total);
+            statusInts.add(status);
           });
         }
       }
