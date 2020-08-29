@@ -3,8 +3,11 @@ import 'package:cabbitfood/screens/main_shop.dart';
 import 'package:cabbitfood/screens/main_user.dart';
 import 'package:cabbitfood/screens/signIn.dart';
 import 'package:cabbitfood/screens/signUp.dart';
+import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/utils/normal_dialog.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,8 +27,21 @@ class _HomeState extends State<Home> {
 
   Future<Null> checkPreference() async {
     try {
+      FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+      String token = await firebaseMessaging.getToken();
+      print('token === $token');
+
       SharedPreferences preference = await SharedPreferences.getInstance();
       String chooseType = preference.getString('ChooseType');
+      String idLogin = preference.getString('id');
+      print('idLogin === $idLogin');
+
+      if (idLogin != null && idLogin.isNotEmpty) {
+        String url =
+            '${MyConstant().domain}/UngPHP3/editTokenWhereId.php?isAdd=true&id=$idLogin&Token=$token';
+        await Dio().get(url).then((value) => print('update token success'));
+      }
+
       if (chooseType != null && chooseType.isNotEmpty) {
         if (chooseType == 'User') {
           routeToSevice(MainUser());
