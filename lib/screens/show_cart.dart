@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:cabbitfood/model/cart_model.dart';
+import 'package:cabbitfood/model/user_model.dart';
 import 'package:cabbitfood/utils/my_constant.dart';
 import 'package:cabbitfood/utils/my_style.dart';
 import 'package:cabbitfood/utils/normal_dialog.dart';
@@ -330,10 +333,9 @@ class _ShowCartState extends State<ShowCart> {
     String amount = amounts.toString();
     String sum = sums.toString();
 
-    SharedPreferences preferences =await SharedPreferences.getInstance();
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     String idUser = preferences.getString('id');
     String nameUser = preferences.getString('Name');
- 
 
     print(
         'orderDateTime = $orderDateTime,idUser =$idUser ,nameUser=$nameUser,idShop =$idShop,nameShop =$nameShop,distance=$distance,transport=$transport');
@@ -344,6 +346,7 @@ class _ShowCartState extends State<ShowCart> {
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         clearAllSQLite();
+        notificationToShop(idShop);
       } else {
         normalDialog(context, 'กรุณาลองใหม่');
       }
@@ -358,6 +361,20 @@ class _ShowCartState extends State<ShowCart> {
     );
     await SQLiteHelper().deleteAllData().then((value) {
       readSQLite();
+    });
+  }
+
+  Future<Null> notificationToShop(String idShop) async {
+    String urlFindToken =
+        '${MyConstant().domain}/UngPHP3/getUserWhereId.php?isAdd=true&id=$idShop';
+    await Dio().get(urlFindToken).then((value) {
+      var result = json.decode(value.data);
+      print('result ==>$result');
+      for (var json in result) {
+        UserModel model = UserModel.fromJson(json);
+        String tokenShop = model.token;
+        print('tokenShop==>$tokenShop');
+      }
     });
   }
 }
