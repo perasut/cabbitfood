@@ -374,7 +374,20 @@ class _ShowCartState extends State<ShowCart> {
         UserModel model = UserModel.fromJson(json);
         String tokenShop = model.token;
         print('tokenShop==>$tokenShop');
+
+        String title = 'มีOrder จากลูกค้า';
+        String body = 'มีการสั่งอาหารจากลูกค้าครับ';
+
+        String urlSendToken =
+            '${MyConstant().domain}/UngPHP3/apiNotification.php?isAdd=true&token=$tokenShop&title=$title&body=$body';
+
+        sendNotificationlToShop(urlSendToken);
       }
     });
+  }
+
+  Future<Null> sendNotificationlToShop(String urlSendToken) async {
+    await Dio().get(urlSendToken).then(
+        (value) => normalDialog(context, 'ส่งข้อความไปที่ร้านค้าแล้วครับ'));
   }
 }
