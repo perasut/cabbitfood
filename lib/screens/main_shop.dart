@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:cabbitfood/utils/my_style.dart';
+import 'package:cabbitfood/utils/normal_dialog.dart';
 import 'package:cabbitfood/utils/signout_process.dart';
 import 'package:cabbitfood/widget/information.dart';
 import 'package:cabbitfood/widget/list_food_menu_shop.dart';
 import 'package:cabbitfood/widget/order_list_shop.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class MainShop extends StatefulWidget {
@@ -12,6 +16,39 @@ class MainShop extends StatefulWidget {
 
 class _MainShopState extends State<MainShop> {
   Widget currentWidget = OrderListShop();
+
+  @override
+  void initState() {
+    super.initState();
+    aboutNotification();
+  }
+
+  Future<Null> aboutNotification() async {
+    if (Platform.isAndroid) {
+      print('about Noti Work Android');
+      FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+      await firebaseMessaging.configure(
+        onLaunch: (message) async {
+          print('Noti Onlaunch');
+        },
+        onResume: (message) async {
+          print('Noti onResume ${message.toString()}');
+          String title = message['data']['title'];
+          String body = message['data']['body'];
+          normalDialog2(context,title, body);
+        },
+        onMessage: (message) async {
+          print('Noti OnMessage ${message.toString()}');
+          String title = message['notification']['title'];
+          String notiMessage = message['notification']['body'];
+          normalDialog2(context, title, notiMessage);
+        },
+      );
+    } else if (Platform.isIOS) {
+      print('about Noti Work Ios');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

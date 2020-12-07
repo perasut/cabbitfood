@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cabbitfood/screens/main_rider.dart';
 import 'package:cabbitfood/screens/main_shop.dart';
 import 'package:cabbitfood/screens/main_user.dart';
@@ -23,6 +25,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     checkPreference();
+  
   }
 
   Future<Null> checkPreference() async {
@@ -114,4 +117,6 @@ class _HomeState extends State<Home> {
         accountName: Text('sdo'),
         accountEmail: Text('sudo@gmail.com'));
   }
+
+
 }
